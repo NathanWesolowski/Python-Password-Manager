@@ -1,4 +1,4 @@
-from database import initialize_db, add_password, retrieve_passwords, delete_password, update_password
+from database import initialize_db, add_password, retrieve_passwords, delete_password, update_password, set_master_password, verify_master_password, master_password_exists
 from encryption import encrypt_password, decrypt_password, generate_key
 import os
 
@@ -62,7 +62,7 @@ def edit_password_entry():
 
 def main():
     # Set up or authenticate master password
-    if not verify_master_password("dummy"):  # Check if any master password is set
+    if not master_password_exists():  # Check if any master password is set
         setup_master_password()
     elif not authenticate_user():
         return  # Exit if authentication fails

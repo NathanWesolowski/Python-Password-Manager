@@ -4,12 +4,20 @@ import hashlib
 def initialize_db():
     connection = sqlite3.connect("password_manager.db")
     cursor = connection.cursor()
+    # Create the passwords table if it doesn't exist
     cursor.execute(
         '''CREATE TABLE IF NOT EXISTS passwords (
             id INTEGER PRIMARY KEY,
             website TEXT NOT NULL,
             username TEXT NOT NULL,
             password TEXT NOT NULL
+        )'''
+    )
+    # Create the master table if it doesn't exist
+    cursor.execute(
+        '''CREATE TABLE IF NOT EXISTS master (
+            id INTEGER PRIMARY KEY,
+            password_hash TEXT NOT NULL
         )'''
     )
     connection.commit()
@@ -34,6 +42,15 @@ def verify_master_password(master_password):
     if result is None:
         return False
     return hashed_password == result[0]
+
+def master_password_exists():
+    connection = sqlite3.connect("password_manager.db")
+    cursor = connection.cursor()
+    cursor.execute("SELECT password_hash FROM master")
+    result = cursor.fetchone()
+    connection.close()
+    return result is not None  # Returns True if a master password is set
+
 
 def add_password(website, username, password):
     connection = sqlite3.connect("password_manager.db")
