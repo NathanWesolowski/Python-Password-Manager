@@ -9,6 +9,31 @@ if not os.path.exists("secret.key"):
 # Initialize the database
 initialize_db()
 
+def setup_master_password():
+    print("Set up a master password for your password manager.")
+    while True:
+        master_password = input("Enter a master password: ")
+        confirm_password = input("Confirm master password: ")
+        if master_password == confirm_password:
+            set_master_password(master_password)
+            print("Master password set successfully!")
+            break
+        else:
+            print("Passwords do not match. Try again.")
+
+def authenticate_user():
+    attempts = 3
+    while attempts > 0:
+        master_password = input("Enter your master password: ")
+        if verify_master_password(master_password):
+            print("Authentication successful!")
+            return True
+        else:
+            attempts -= 1
+            print(f"Incorrect password. {attempts} attempt(s) left.")
+    print("Failed to authenticate. Exiting application.")
+    return False
+
 def add_new_password():
     website = input("Enter the website: ")
     username = input("Enter the username: ")
@@ -36,6 +61,13 @@ def edit_password_entry():
     print("Password updated successfully.")
 
 def main():
+    # Set up or authenticate master password
+    if not verify_master_password("dummy"):  # Check if any master password is set
+        setup_master_password()
+    elif not authenticate_user():
+        return  # Exit if authentication fails
+
+    # Main application loop after authentication
     while True:
         choice = input(
             "Choose an option:\n"
